@@ -11,16 +11,35 @@ BACKEND_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BACKEND_DIR))
 
 from sqlalchemy import create_engine, inspect  # noqa: E402
+from sqlalchemy.engine import make_url  # noqa: E402
+from sqlalchemy.exc import ArgumentError  # noqa: E402
 
 from app.config import settings  # noqa: E402
-from app.database import Base  # noqa: E402
-import app.models.db_models  # noqa: E402,F401
 
 
 def main() -> None:
     database_url = settings.SYNC_DATABASE_URL
-    if "sqlite" in database_url.lower():
+    try:
+        parsed_url = make_url(database_url)
+    except (ArgumentError, TypeError) as exc:
+        raise SystemExit(
+            "Invalid SYNC_DATABASE_URL. Set it to a PostgreSQL SQLAlchemy URL, "
+            "for example postgresql://USER:PASSWORD@HOST:5432/DATABASE. "
+            "URL-encode reserved characters in the username or password."
+        ) from exc
+
+    if parsed_url.get_backend_name() == "sqlite":
         raise SystemExit("Vercel bootstrap requires a persistent PostgreSQL DATABASE_URL.")
+    if parsed_url.get_backend_name() != "postgresql":
+        raise SystemExit(
+            "Vercel bootstrap requires PostgreSQL. Set SYNC_DATABASE_URL to a "
+            "postgresql:// or postgresql+psycopg2:// SQLAlchemy URL."
+        )
+
+    # Importing app.database creates the application's global engine. Do this
+    # only after validating the URL so malformed configuration gets the error above.
+    from app.database import Base  # noqa: PLC0415
+    import app.models.db_models  # noqa: PLC0415,F401
 
     engine = create_engine(database_url, pool_pre_ping=True)
     try:
