@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: sahayak-ai-backend
+    env: python
+    region: singapore
+    plan: free
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt"
+    preDeployCommand: "python scripts/migrate.py"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sahayak-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: "https://localhost:8081,https://sahayak.ai"
+      - key: AI_EXTERNAL_PROCESSING_ENABLED
+        value: "false"
+
+databases:
+  - name: sahayak-db
+    region: singapore
+    plan: free
+    databaseName: sahayak
+    user: sahayak_user
+

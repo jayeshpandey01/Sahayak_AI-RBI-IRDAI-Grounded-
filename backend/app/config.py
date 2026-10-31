@@ -37,6 +37,13 @@ if root_env_path.exists():
         if value is not None and not os.getenv(key):
             os.environ[key] = value
 
+def normalize_db_url(url: str) -> str:
+    cleaned = (url or "").strip().strip("'\"")
+    if cleaned.startswith("postgres://"):
+        return cleaned.replace("postgres://", "postgresql://", 1)
+    return cleaned
+
+
 DEFAULT_ENVIRONMENT = os.getenv(
     "ENVIRONMENT",
     "production" if os.getenv("VERCEL_ENV", "").lower() == "production" else "development",
@@ -48,8 +55,9 @@ class Settings(BaseModel):
     ENVIRONMENT: str = DEFAULT_ENVIRONMENT
     # Current SQLAlchemy data access uses a synchronous engine. Honor the
     # common DATABASE_URL setting when SYNC_DATABASE_URL is not supplied.
-    DATABASE_URL: str = os.getenv("DATABASE_URL", DEFAULT_SYNC_DB_URL)
-    SYNC_DATABASE_URL: str = os.getenv("SYNC_DATABASE_URL") or DATABASE_URL
+    # Automatically normalize postgres:// to postgresql:// for Render, Supabase, and Heroku.
+    DATABASE_URL: str = normalize_db_url(os.getenv("DATABASE_URL", DEFAULT_SYNC_DB_URL))
+    SYNC_DATABASE_URL: str = normalize_db_url(os.getenv("SYNC_DATABASE_URL") or os.getenv("DATABASE_URL", DEFAULT_SYNC_DB_URL))
     ALLOWED_ORIGINS: list[str] = configured_origins()
     RBI_MAX_LOAN_AMOUNT: int = 5_000_000
     RBI_MIN_LOAN_AMOUNT: int = 1_000

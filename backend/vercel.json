@@ -5,5 +5,11 @@
       "maxDuration": 60,
       "includeFiles": "app/static/voice_demo.html"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "main.py"
+    }
+  ]
 }
