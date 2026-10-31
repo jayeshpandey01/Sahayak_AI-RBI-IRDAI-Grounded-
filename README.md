@@ -1,331 +1,317 @@
-Demo code open source with the authorization of Andrés F. Méndez, CEO of Ubanku Fintech.
-# UbankuApp
+# Sahayak AI - Enterprise Financial Readiness Copilot and Digital Wallet
 
-UbankuApp is a React Native demo with a local FastAPI backend for the Sahayak AI loan-readiness journey. The demo wallet uses a separate simulated, account-scoped ledger for funding and QR transfers; it has no cash value. Stripe test Checkout is a separate optional payment-order demo and does not fund or debit the simulated wallet. This is not a production wallet, lender, or payment collection service. Real payments require a configured provider integration and approval for the intended use; real loans require a regulated lender integration.
+## Executive Summary
 
-See the [financial app readiness plan](docs/financial-app-readiness-plan.md) for the connected scope, partner requirements, and production acceptance plan.
+Sahayak AI is an enterprise financial readiness copilot and digital wallet platform designed for the Indian banking and credit ecosystem. The system bridges consumer financial literacy and institutional compliance by providing automated, source-grounded guidance on digital lending regulations, debt audit, and payment resolution.
 
-The project adheres to the Atomic Design pattern to ensure a scalable and maintainable design system.
-
-## Contact for Complete Fullstack Wallet Banking System and Custom Enterprise Technology Solutions
-
-For inquiries about purchasing the complete or a customized wallet system, please reach out to:
-- **Andrés F Méndez (CEO of Ubanku):**
-  
-    - [![LinkedIn](https://img.shields.io/badge/LinkedIn-andresfmendez-blue)](https://www.linkedin.com/in/andresfmendez/)
-      
-- **Daniel Sandoval (Software Engineer, Founding Team):**
-  
-    - [![LinkedIn](https://img.shields.io/badge/LinkedIn-danisando-blue)](https://www.linkedin.com/in/danisando/)
-
-## Technologies
-
-- **Frontend**:
-  - React Native
-  - TypeScript
-  - JavaScript
-  - Styled Components
-    
-- **Backend**:
-  - FastAPI in `backend/` (included demo service)
-  - **Testing**:
-  - Jest
-
-## Atomic Design
-
-This project follows the Atomic Design methodology to create a consistent and scalable design system. Atomic Design structures our components into five distinct levels:
-1. **Atoms**: The smallest building blocks, such as buttons, inputs, and labels.
-2. **Molecules**: Combinations of atoms that form simple UI components, like a search form.
-3. **Organisms**: Complex UI components made up of molecules and/or atoms, like a header or a card.
-4. **Templates**: Page-level components that place organisms in a layout and articulate the design’s underlying content structure.
-5. **Pages**: Specific instances of templates that display real content.
-
-By organizing our components in this manner, we achieve a more maintainable and scalable codebase, allowing for easier updates and consistency across the application.
-
-## Features Included in the Demo
-
-- **Authentication Module**:
-  - Backend email/password registration and login for the active Sahayak flow
-  - JWT-backed session restoration and validation
-  - Legacy phone/PIN screens remain in source but are not active or connected to this backend
-    
-- **Home Module**:
-  - Dashboard with user overview
-  - Navigation to other modules
-    
-- **User Module**:
-  - Existing Ubanku profile and referral UI is demo/partial; profile editing is not connected to Sahayak accounts
-    
-- **Wallet Module**:
-  - View the authenticated simulated demo balance, funding history, and account-to-account QR transfers
-  - Demo sends debit the sender and credit the recipient atomically; insufficient balance is rejected
-  - Optional Stripe test Checkout orders are kept in a separate payment ledger and are not spendable in demo transfers
-  - Withdrawals and real transfers are unavailable
-
-- **Loan Module**:
-  - Create and resume synthetic loan readiness journeys and compare example offers/EMI calculations
-  - Authenticated readiness history is not a record of approved or disbursed loans
-  - No lender application, loan disbursement, repayment schedule, or real EMI collection is connected yet
-    
-- **Movements Module**:
-  - View transaction history
-  - Detailed view of individual transactions
-
-## Screenshots
-
-To give you a better idea of the application's interfaces, below are some key screenshots:
-
-### Authentication Module
-
-<img src="https://github.com/RogelioRichmanAstronaut/Ubanku-wallet-bank-app/assets/56854119/d493dce8-11a5-41ba-a1c9-d90267637af4" alt="Login Screen" width="300">
-<img src="https://github.com/RogelioRichmanAstronaut/Ubanku-wallet-bank-app/assets/56854119/88b98294-0d05-4511-bc96-93837f93e7c9" alt="Login step 1 Screen" width="300">
-
-### Home Module
-
-<img src="https://github.com/RogelioRichmanAstronaut/Ubanku-wallet-bank-app/assets/56854119/bc1f4f75-9cc3-4383-b7f0-220ef22e8e26" alt="Home Dashboard" width="300">
-
-
-### User Module
-
-<img src="https://github.com/RogelioRichmanAstronaut/Ubanku-wallet-bank-app/assets/56854119/f6075ade-f3f6-4ba3-a86c-bc33f2c11db5" alt="User Profile" width="300">
-<img src="https://github.com/RogelioRichmanAstronaut/Ubanku-wallet-bank-app/assets/56854119/13a23f7c-9e02-48ed-91dd-913854fc7ee7" alt="Referral System" width="300">
-
-### Wallet Module
-
-<img src="https://github.com/RogelioRichmanAstronaut/Ubanku-wallet-bank-app/assets/56854119/86db6acc-30fe-493b-b252-d076af03402c" alt="Wallet Balance" width="300">
-
-<img src="https://github.com/RogelioRichmanAstronaut/Ubanku-wallet-bank-app/assets/56854119/17030d33-7756-47da-9290-1ede1d120bd3" alt="Add Funds" width="300">
-
-
-## Movements Module
-
-<img src="https://github.com/RogelioRichmanAstronaut/Ubanku-wallet-bank-app/assets/56854119/6d5b7e08-8ceb-4720-abec-d33f2fd88cab" alt="Transaction History" width="300">
-<img src="https://github.com/RogelioRichmanAstronaut/Ubanku-wallet-bank-app/assets/56854119/ddec77f2-fb38-4c6c-97e0-7b6669aa50ba" alt="Transaction Details" width="300">
-
-
-## Project Structure
-
-```UbankuApp
-├── App.tsx
-├── Gemfile
-├── Gemfile.lock
-├── LICENSE
-├── README.md
-├── __tests__
-│   └── App-test.tsx
-├── android
-│   ├── app
-│   │   ├── build.gradle
-│   │   ├── debug.keystore
-│   │   ├── proguard-rules.pro
-│   │   └── src
-│   │       ├── debug
-│   │       │   ├── AndroidManifest.xml
-│   │       │   └── java
-│   │       │       └── com
-│   │       │           └── ubankuapp
-│   │       │               └── ReactNativeFlipper.java
-│   │       ├── main
-│   │       │   ├── AndroidManifest.xml
-│   │       │   ├── assets
-│   │       │   ├── java
-│   │       │   │   └── com
-│   │       │   │       ├── MainActivity.java
-│   │       │   │       └── MainApplication.java
-│   │       │   └── res
-│   │       └── release
-│   │           └── java
-│   │               └── com
-│   │                   └── ubankuapp
-│   │                       └── ReactNativeFlipper.java
-│   ├── build.gradle
-│   ├── gradle
-│   │   └── wrapper
-│   ├── gradle.properties
-│   ├── gradlew
-│   ├── gradlew.bat
-│   ├── link-assets-manifest.json
-│   └── settings.gradle
-├── app.json
-├── babel.config.js
-├── index.js
-├── ios
-│   ├── Podfile
-│   ├── Podfile.lock
-│   ├── UbankuApp
-│   │   ├── AppDelegate.h
-│   │   ├── AppDelegate.mm
-│   │   ├── Images.xcassets
-│   │   ├── Info.plist
-│   │   ├── LaunchScreen.storyboard
-│   │   └── main.m
-│   ├── UbankuApp.xcodeproj
-│   ├── UbankuApp.xcworkspace
-│   ├── UbankuAppTests
-│   └── link-assets-manifest.json
-├── metro.config.js
-├── package-lock.json
-├── package.json
-├── react-native.config.js
-├── src
-│   ├── assets
-│   ├── components
-│   ├── contexts
-│   ├── hooks
-│   ├── interfaces
-│   ├── navigation
-│   ├── screens
-│   ├── services
-│   ├── theme
-│   ├── types
-│   └── utils
-├── tsconfig.json
-└── yarn.lock
-
-```
-
-## Installation
-
-1. Clone the repository:
-   
-   ```sh
-   git clone https://github.com/RogelioRichmanAstronaut/Ubanku-wallet-bank-app.git
-   cd ubankuapp
-   ```
-
-3. Install dependencies with npm:
-
-   ```sh
-   npm ci
-   ```
-
-## Running with Expo
-
-The app uses Expo SDK 58 and supports Expo Go on a physical Android or iOS
-device, plus a browser preview. You do not need Android Studio or a local
-Android SDK to run the app on a phone with Expo Go. Install a compatible Expo Go
-client, then start the development server:
-
-```sh
-npm start
-```
-
-Scan the terminal QR code with Expo Go. To start Expo Go mode directly for
-Android:
-
-```sh
-npm run android:expo
-```
-
-To run the browser preview:
-
-```sh
-npm run web
-```
-
-The legacy `npm run android` and `npm run ios` commands use the checked-in
-React Native native projects; they require their respective native SDKs and are
-not the Expo Go workflow. Building a standalone native app likewise requires
-native build tooling or a configured remote build service.
-
-Expo Go and the browser preview are for development/demo flows. The browser
-keeps device-trust tokens in memory only; native Expo runs store them using
-Expo SecureStore.
-
-## API configuration
-
-The FastAPI source is included in `backend/`. Start it in one terminal:
-
-```sh
-npm run backend:setup
-npm run backend:start
-```
-
-Check `http://127.0.0.1:8000/health` and open `http://127.0.0.1:8000/docs`.
-Keep `npm run backend:start` running while using the app. The app uses
-`EXPO_PUBLIC_API_BASE_URL` and defaults to `http://127.0.0.1:8000` on iOS/web
-or `http://10.0.2.2:8000` on the Android emulator. Using the explicit IPv4
-loopback avoids `localhost` resolving to `::1` when Uvicorn is listening only
-on IPv4. For a physical
-device, set it to the development computer's LAN address, for example
-`http://192.168.1.20:8000`, and keep both devices on the same network.
-
-If registration reports “Could not connect” or a browser access-control error,
-first confirm the backend terminal is still running and that
-`http://127.0.0.1:8000/health` reports `database: connected`. A refused
-connection can appear as a CORS error in browser developer tools even when the
-origin configuration is correct.
-
-If the demo wallet reports that its endpoint is missing, the app has reached an
-older backend process or deployment. Restart/redeploy from this checkout and
-confirm `/docs` lists `/api/v1/demo-wallet/me`, `/api/v1/demo-wallet/funds`, and
-`/api/v1/demo-wallet/transfers`. Production databases must also apply pending
-SQL files with `python backend/scripts/migrate.py apply` before using new tables.
-
-To seed a local development account with the clearly simulated demo portfolio
-(₹1 lakh demo wallet target, three example loan rows, and about 100 wallet
-history entries), run `python backend/scripts/seed_demo_account_portfolio.py <account-email>`
-from the repository root. The script refuses production and non-SQLite
-databases; it does not create Stripe payments or real loan repayments.
-
-Authentication uses the backend's email/password contract (`/api/auth/register`
-and `/api/auth/login`). Native sessions use Expo SecureStore; web uses
-AsyncStorage. The retired phone OTP screens are no longer the active sign-in
-flow.
-
-Stripe test Checkout top-ups require Stripe test keys in ignored `backend/.env` (or the
-ignored repository-root `.env`, which the backend reads as a fallback):
-`STRIPE_MODE=test`, `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, and
-`STRIPE_WEBHOOK_SECRET`. Keep `STRIPE_LIVE_ENABLED=false`. Configure Stripe CLI
-or a reachable HTTPS endpoint to forward `checkout.session.completed` events to
-`/api/v1/webhooks/stripe`; without a valid signed webhook the app will not show
-success or credit the wallet. Stripe Checkout returns to `ubankuapp://payment-return`
-by default; set `STRIPE_RETURN_URL` for your demo host as needed. Send uses the
-separate simulated demo wallet and does not call Stripe; real withdrawals and
-payouts are unavailable. See the [Stripe migration plan](docs/stripe-migration-plan.md)
-for setup and limitations. After a verified top-up, “Ask Sahayak” can explain
-the server-verified payment status; sending that summary to external AI remains
-disabled by default and requires separate consent and server flags. The Sahayak loan journey
-uses backend email/password authentication, a database-backed synthetic offer catalogue,
-deterministic server EMI, a persisted readiness journey, audited consent,
-synthetic document preflight and a `READY_FOR_HANDOFF` demo state. The handoff
-does not contact a lender or submit an application. Client inputs such as income
-and employment remain in the per-user local cache.
-
-For a stable local login across backend restarts, create `backend/.env` from
-`backend/.env.example` and set a private `JWT_SECRET`. The development server
-otherwise generates a process-local secret, so existing sessions expire when
-the server restarts.
-
-## Testing
-
-Run the unit tests:
-
-```sh
-npm test
-```
-
-The Maestro E2E flows require the Maestro CLI and a standalone app installed on
-a simulator/emulator. They are separate from Expo Go and require native build
-tooling to create the app binary.
-
-Run the backend connected journey flow with a pre-created demo account:
-
-```sh
-TEST_EMAIL=demo@example.test TEST_PASSWORD='StrongDemo123!' npm run e2e:journey:android
-```
-
-Build/install the app with the same `EXPO_PUBLIC_API_BASE_URL` used by the
-simulator before running Maestro. The journey flow uses the backend's synthetic
-offer catalogue and synthetic document preflight; it never uploads real files
-or submits an application to a lender.
-
-## License
-This project is licensed under the terms of the MIT license. See the [LICENSE](LICENSE) file for details.
+Every informational response generated by the assistant is grounded directly in official regulatory directives issued by the Reserve Bank of India (RBI), the Insurance Regulatory and Development Authority of India (IRDAI), and the National Payments Corporation of India (NPCI). The platform integrates deterministic financial computation with multimodal conversational intelligence (text and voice), structured consent tracking, payment order orchestration, and simulated digital wallet ledger management.
 
 ---
-For more detailed information, please refer to the project documentation or contact the project maintainers.
 
-[![GitHub](https://img.shields.io/badge/GitHub-RogelioRichmanAstronaut-181717?logo=github)](https://github.com/RogelioRichmanAstronaut)
+## Architectural Overview
 
-*Developed by Daniel Sandoval.* 
+The application follows a decoupled client-server architecture:
+
+- **Frontend Client**: Cross-platform application built with React Native (Expo SDK 58), React 19, TypeScript, and NativeBase. Supports iOS, Android, and Web with native gesture handling, real-time speech recognition, and an icon-only navigation interface.
+- **Backend Service**: High-performance asynchronous REST API built with FastAPI (Python 3.11+), Pydantic v2 schemas, and SQLAlchemy ORM.
+- **Data Layer**: Relational database supporting SQLite for local verification and PostgreSQL for production environments, structured around double-entry ledger principles.
+- **AI and Multimodal Pipeline**: Retrieval-Augmented Generation (RAG) engine with vector and keyword search over verified regulatory corpora, backed by Sarvam AI (Indic STT and TTS), Groq Whisper, OpenRouter LLM inference, and resilient Google TTS fallback.
+- **Middleware Infrastructure**: Request ID correlation, distributed idempotency locks (`X-Idempotency-Key`), and automated PII masking on outbound payloads.
+
+```mermaid
+flowchart TD
+    Client["Cross-Platform Client (React Native / Expo Web / iOS / Android)"]
+    
+    subgraph Gateway["API Gateway and Middleware Pipeline"]
+        ReqID["Request ID Tracing"]
+        Idemp["Idempotency Filter (X-Idempotency-Key)"]
+        PIIMask["PII Sanitization Middleware"]
+        AuthMid["JWT Authentication and RBAC"]
+    end
+    
+    subgraph CoreServices["FastAPI Service Tier"]
+        AuthSvc["Authentication and Session Service"]
+        VoiceSvc["Multimodal Voice Orchestrator"]
+        ChatSvc["Grounded Chat and Compliance Agent"]
+        LoanSvc["Loan Catalogue and EMI Engine"]
+        AuditSvc["Portfolio and Debt Audit Service"]
+        OrderSvc["Payment Orders and Webhook Service"]
+        WalletSvc["Atomic Ledger and Wallet Service"]
+    end
+    
+    subgraph IntelligenceTier["AI and Multimodal Providers"]
+        RAGCorpus[("Regulatory Corpus (RBI, IRDAI, NPCI)")]
+        Sarvam["Sarvam AI (Indic STT / TTS)"]
+        GroqWhisper["Groq (Whisper Large v3)"]
+        OpenRouter["OpenRouter (Structured LLM Engine)"]
+        GoogleTTS["Google TTS (Resilient Fallback)"]
+    end
+    
+    subgraph StorageTier["Data Persistence"]
+        DB[("Relational Database (SQLite / PostgreSQL)")]
+    end
+
+    Client --> ReqID
+    ReqID --> Idemp
+    Idemp --> PIIMask
+    PIIMask --> AuthMid
+    AuthMid --> CoreServices
+
+    VoiceSvc --> Sarvam
+    VoiceSvc --> GroqWhisper
+    VoiceSvc --> GoogleTTS
+    ChatSvc --> RAGCorpus
+    ChatSvc --> OpenRouter
+    
+    CoreServices --> DB
+```
+
+---
+
+## Core Capabilities
+
+### 1. Regulatory-Grounded Financial Copilot
+- **Documented Citations**: Responses regarding digital lending guidelines, Key Fact Statements (KFS), Annual Percentage Rates (APR), recovery agent codes of conduct, prepayment foreclosure charges, and insurance free-look terms provide verifiable clause citations.
+- **Guardrail Enforcement**: Prevents hallucinated credit approvals. Clarifies lender-specific boundaries and directs users to official grievance redressal mechanisms (such as the RBI Integrated Ombudsman Scheme).
+- **Multilingual Support**: Real-time localization in English, Hindi (हिन्दी), and Marathi (मराठी).
+
+### 2. Real-Time Multimodal Voice-to-Voice Architecture
+- **Speech-to-Text (STT)**: Direct streaming audio ingestion supporting WebM, MP4/AAC, OGG, and WAV containers. Automatic magic-byte inspection detects audio signatures and normalizes MIME types.
+- **Indic Voice Synthesis (TTS)**: Indic vocalization powered by Sarvam AI (`simran_en_conversation`, `roopa_hi_conversational`, `ishita_mr_conversational`), coupled with an automated zero-dependency streaming fallback.
+- **Client Speech Recognition**: Integrates browser-native Web Speech API for immediate live transcription feedback during active recording sessions.
+- **Speech Lifecycle Management**: Hardware disconnect detection (`track.onmute`, `track.onended`), automatic silence detection (2.5-second inactivity timer), and a pause-to-send pipeline.
+
+### 3. Loan Discovery and Catalogue Engine
+- **Centralized Product Catalogue**: Standardized database schema storing interest rates (fixed vs. floating), processing fees, tenure options, and eligibility parameters across commercial banks and Non-Banking Financial Companies (NBFCs).
+- **Deterministic EMI Engine**: Computes exact monthly amortizations and APR disclosures based on RBI KFS norms without relying on probabilistic model outputs.
+- **Readiness Workflows**: Step-by-step guidance covering eligibility checks, document preflight analysis, and consent logging.
+
+### 4. Loan Portfolio and Debt Audit Management
+- **Centralized Debt Tracker**: Monitors active personal loans, credit card balances, vehicle loans, and home mortgages.
+- **Audit Metrics**: Calculates debt-to-income (DTI) ratios, aggregate monthly liabilities, and payment health indicators.
+- **Bill Schedule Integration**: Tracks scheduled due dates with reminder status.
+
+### 5. Security, Privacy, and Financial Integrity
+- **Double-Entry Ledger**: Demo wallet transactions are recorded as paired debit and credit entries with account balance validation.
+- **Strict Idempotency**: Modifying requests requiring transactional safety accept a unique `X-Idempotency-Key` header, preventing duplicate debit or order execution.
+- **PII Masking**: Outbound logging masks Aadhaar numbers, Permanent Account Numbers (PAN), Bank Account Numbers, and payment secrets.
+- **Purpose-Audited Consent**: User consent events are timestamped and logged with explicit purpose descriptors.
+
+---
+
+## Repository Structure
+
+```
+├── .agents/                    # Agentic configuration and engineering skills
+├── .maestro/                   # Maestro end-to-end mobile flow definitions
+├── backend/                    # FastAPI backend service
+│   ├── app/
+│   │   ├── ai/                 # RAG indexing, prompt schemas, and provider clients
+│   │   ├── api/                # REST API routers (auth, chat, voice, financial, etc.)
+│   │   ├── middleware/         # Idempotency, request tracing, and PII masking
+│   │   ├── models/             # SQLAlchemy ORM database models
+│   │   ├── services/           # Core domain logic and financial calculators
+│   │   ├── static/             # Static voice console and web demonstration assets
+│   │   ├── config.py           # Application settings and environment validation
+│   │   ├── database.py         # Database engine and connection lifecycle
+│   │   └── main.py             # Application factory and middleware registration
+│   ├── tests/                  # Pytest test suites (unit, integration, and E2E)
+│   ├── requirements.txt        # Python package dependencies
+│   └── .env.example            # Backend environment template
+├── src/                        # React Native cross-platform application
+│   ├── assets/                 # Brand assets and typography
+│   ├── components/             # Reusable UI primitives and design tokens
+│   ├── contexts/               # React Context providers (Auth, Language)
+│   ├── navigation/             # App navigation stacks and tab navigator
+│   ├── screens/                # Application screens (Chat, Journey, Portfolio, Wallet)
+│   ├── services/               # API clients and HTTP abstractions
+│   ├── types/                  # TypeScript interface definitions
+│   └── utils/                  # Voice client, currency formatting, and audio decoders
+├── __tests__/                  # Frontend Jest test suites
+├── App.tsx                     # React Native root component
+├── app.json                    # Expo project configuration
+├── package.json                # Node.js dependencies and script definitions
+└── tsconfig.json               # TypeScript compiler configuration
+```
+
+---
+
+## Technology Stack
+
+| Domain | Technology | Description |
+| :--- | :--- | :--- |
+| **Frontend Framework** | React Native 0.88.1 / Expo SDK 58 | Cross-platform mobile and web runtime |
+| **Frontend Language** | TypeScript 6.0 / React 19.3 | Type-safe user interface development |
+| **UI Components** | NativeBase 3.4 / Styled Components | Accessible design system and layout primitives |
+| **Navigation** | React Navigation 7 | Native stack and icon-only bottom tab navigation |
+| **Backend Framework** | FastAPI 0.115 / Uvicorn | Asynchronous Python web framework |
+| **Validation Layer** | Pydantic v2.8 | Request and response schema enforcement |
+| **ORM & Database** | SQLAlchemy / SQLite / PostgreSQL | Relational persistence and connection pooling |
+| **AI Inference** | OpenRouter / Groq / Sarvam AI | Hybrid LLM, Whisper STT, and Indic TTS pipeline |
+| **Test Frameworks** | Pytest, Jest, Maestro | Comprehensive backend, frontend, and mobile E2E tests |
+
+---
+
+## Prerequisites
+
+- **Node.js**: Version 18.x or 20.x LTS
+- **Python**: Version 3.11 or later
+- **Package Managers**: `npm` (v9+) and `pip` (or `uv`)
+- **Optional Native Toolchains**: Android Studio (for Android Emulator) or Xcode (for iOS Simulator on macOS)
+
+---
+
+## Environment Setup
+
+### 1. Backend Environment Configuration
+
+Create a `.env` file in the `backend/` directory based on the provided template:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+Key environment parameters:
+
+| Variable | Default Value | Description |
+| :--- | :--- | :--- |
+| `ENVIRONMENT` | `development` | Runtime environment (`development`, `production`) |
+| `PORT` | `8000` | Backend listener port |
+| `DATABASE_URL` | `sqlite:///./sahayak.db` | SQLAlchemy connection string |
+| `JWT_SECRET` | System Generated | Secret key used for signing session tokens |
+| `ALLOWED_ORIGINS` | `http://localhost:8081,...` | Permitted CORS origins |
+| `AI_EXTERNAL_PROCESSING_ENABLED` | `false` | Enables live external LLM processing |
+| `SARVAM_API_KEY` | Optional | API key for Sarvam AI Indic STT and TTS |
+| `GROQ_API_KEY` | Optional | API key for Groq Whisper transcription |
+| `OPENROUTER_API_KEY` | Optional | API key for OpenRouter model access |
+| `STRIPE_SECRET_KEY` | Optional | Stripe Secret Key for test order checkouts |
+
+---
+
+## Installation and Local Development
+
+### 1. Backend Service Setup
+
+Initialize a Python virtual environment and install the required packages:
+
+```bash
+# Create virtual environment
+python3 -m venv backend/.venv
+
+# Activate virtual environment
+source backend/.venv/bin/activate
+
+# Install dependencies
+pip install -r backend/requirements.txt
+```
+
+Start the FastAPI application server:
+
+```bash
+cd backend
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+The interactive OpenAPI documentation is available at:
+`http://localhost:8000/docs`
+
+### 2. Frontend Application Setup
+
+In the root repository directory, install the Node.js dependencies:
+
+```bash
+npm install
+```
+
+Launch the development server:
+
+```bash
+# Start standard Expo bundler
+npm run start
+
+# Launch directly in web browser
+npm run web
+
+# Launch with port 8090
+npm run web:8090
+```
+
+To run on native platforms:
+- **Android**: `npm run android`
+- **iOS**: `npm run ios`
+
+---
+
+## Testing and Quality Verification
+
+The codebase maintains automated test coverage across backend API services, React Native components, and end-to-end user flows.
+
+### 1. Backend Unit and Integration Tests
+
+Execute the Pytest test suite with the Python path configured:
+
+```bash
+PYTHONPATH=backend pytest backend/tests/test_ai_voice_and_chat_e2e.py backend/tests/test_ai_voice_e2e_agent.py backend/tests/test_official_website_and_groq_voice.py
+```
+
+### 2. Frontend Unit and Component Tests
+
+Execute Jest across all frontend unit and integration tests:
+
+```bash
+npm test -- --watchAll=false
+```
+
+### 3. End-to-End Mobile Automation (Maestro)
+
+Execute automated device flows:
+
+```bash
+# Android Smoke Flow
+npm run e2e:android
+
+# iOS Smoke Flow
+npm run e2e:ios
+```
+
+---
+
+## Key API Endpoints
+
+### Authentication and Identity
+- `POST /api/auth/register`: Create a new user account with hashed password credentials.
+- `POST /api/auth/login`: Authenticate and receive a JWT bearer token.
+- `GET /api/auth/me`: Retrieve current authenticated user profile and permissions.
+
+### Multimodal AI and Voice Services
+- `POST /api/chat`: Grounded regulatory chat endpoint with RAG context injection.
+- `POST /api/chat/voice/e2e`: End-to-end voice processing (accepts audio input, transcribes, queries RAG, returns text and synthesized speech).
+- `POST /api/chat/voice/transcribe`: Dedicated audio transcription endpoint.
+- `POST /api/chat/voice/speak`: Dedicated text-to-speech synthesis endpoint.
+
+### Financial Products and Loan Audit
+- `GET /api/financial/loans/catalogue`: Retrieve verified loan products with eligibility criteria.
+- `POST /api/financial/loans/calculate-emi`: Deterministic EMI and amortization computation.
+- `GET /api/loan-audit/portfolio`: Retrieve consolidated debt portfolio metrics.
+- `POST /api/loan-audit/records`: Create or update tracked loan records.
+
+### Payment Orders and Ledger
+- `POST /api/payment-orders`: Initiate an idempotent payment order.
+- `GET /api/payment-orders/{order_id}`: Query order status and fulfillment details.
+- `POST /api/demo-wallet/transfer`: Atomic account-to-account transfer within the simulated ledger.
+
+---
+
+## Regulatory and Security Boundaries
+
+1. **Informational Scope**: Sahayak AI provides financial educational guidance and readiness assistance. It does not act as a lender, NBFC, or credit rating agency. All loan terms, approvals, and disbursements remain subject to the sole discretion of the respective underwriting institution.
+2. **Synthetic Data Isolation**: Demo wallet balances, mock loans, and test credits possess no monetary value and cannot be redeemed for fiat currency.
+3. **Credit Score Boundaries**: The platform does not query or alter official credit bureau databases (CIBIL, Experian, Equifax, CRIF). Credit score indicators are illustrative estimates based solely on self-reported inputs.
+4. **Data Protection**: Personal identifiers collected during readiness checks are processed in accordance with the Digital Personal Data Protection (DPDP) Act guidelines.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for complete details.
+
