@@ -1,0 +1,15 @@
+# Sahayak AI Backend Git Ignore
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+sahayak.db
+test_sahayak.db
+*.db
+*firebase-adminsdk*.json
+google-services.json
+GoogleService-Info.plist
+

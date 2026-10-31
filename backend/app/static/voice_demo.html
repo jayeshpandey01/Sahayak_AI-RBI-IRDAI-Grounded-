@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sahayak AI — Dual-Modal Chat & Realtime Voice Agent Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #091724;
+      --card-bg: #102438;
+      --surface: #17324c;
+      --teal: #10b981;
+      --teal-hover: #059669;
+      --teal-glow: rgba(16, 185, 129, 0.25);
+      --ink: #f8fafc;
+      --muted: #94a3b8;
+      --border: #234568;
+      --user-bubble: #1e3a5f;
+      --assistant-bubble: #12283e;
+      --danger: #ef4444;
+      --font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      padding: 16px 24px;
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #10b981, #3b82f6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: white;
+      box-shadow: 0 4px 12px var(--teal-glow);
+    }
+    .brand h1 { font-size: 18px; font-weight: 700; color: #fff; }
+    .brand p { font-size: 12px; color: var(--muted); }
+    .badges {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+    }
+    .badge.highlight {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+    }
+    .btn-voice-launch {
+      background: linear-gradient(135deg, #059669, #087F78);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid #34d399;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s ease;
+    }
+    .btn-voice-launch:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    }
+    .quick-bar {
+      padding: 10px 24px;
+      background: rgba(16, 36, 56, 0.7);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .quick-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #94a3b8;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quick-chip:hover {
+      background: var(--border);
+      color: #fff;
+    }
+    main {
+      flex: 1;
+      padding: 20px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 80%;
+      gap: 6px;
+    }
+    .message.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+    .message.assistant {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+    .bubble {
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .message.user .bubble {
+      background: var(--user-bubble);
+      border: 1px solid #2d5a8c;
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .message.assistant .bubble {
+      background: var(--assistant-bubble);
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      border-bottom-left-radius: 4px;
+    }
+    .meta-tag {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .citations-card {
+      margin-top: 8px;
+      padding: 10px 14px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 10px;
+      font-size: 12px;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .citations-header {
+      font-weight: 700;
+      color: #6ee7b7;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .citation-item {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .citation-item:last-child { border-bottom: none; }
+    .citation-link {
+      color: #38bdf8;
+      text-decoration: underline;
+    }
+    .timings-hud {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+    .timing-pill {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    footer {
+      padding: 16px 24px;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    select, input[type="text"] {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+    select:focus, input[type="text"]:focus {
+      border-color: var(--teal);
+    }
+    .input-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .input-bar input[type="text"] {
+      flex: 1;
+      height: 48px;
+    }
+    .btn {
+      height: 48px;
+      padding: 0 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--teal);
+      color: #064e3b;
+    }
+    .btn-primary:hover { background: var(--teal-hover); color: #fff; }
+    .btn-record {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #dc2626;
+      color: white;
+      padding: 0;
+      position: relative;
+    }
+    .btn-record.recording {
+      background: #b91c1c;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+      70% { box-shadow: 0 0 0 14px rgba(220, 38, 38, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+    .status-text {
+      font-size: 12px;
+      color: #fbbf24;
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+    audio {
+      margin-top: 6px;
+      height: 32px;
+      border-radius: 16px;
+      outline: none;
+    }
+
+    /* ========================================================================= */
+    /* ANIMATED MODAL WITH BLUR BACKGROUND (MATCHES USER SCREENSHOT EXACTLY)    */
+    /* ========================================================================= */
+    .voice-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 50%, rgba(228, 244, 216, 0.85), rgba(247, 251, 230, 0.85));
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .voice-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .voice-modal-card {
+      width: 92%;
+      max-width: 660px;
+      height: 430px;
+      background: #0A0A0C; /* Deep black matching screenshot */
+      border-radius: 32px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 20px;
+      transform: scale(0.9);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .voice-modal-overlay.active .voice-modal-card {
+      transform: scale(1);
+    }
+    .voice-modal-top {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-top: 2px;
+    }
+    .compliance-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94A3B8;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .voice-orb-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+    .voice-white-orb {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 0 45px rgba(255, 255, 255, 0.65);
+      animation: breathingOrb 2.2s infinite ease-in-out;
+      transition: all 0.3s ease;
+    }
+    .voice-white-orb.listening {
+      animation: listeningOrb 1.2s infinite ease-in-out;
+      box-shadow: 0 0 65px rgba(16, 185, 129, 0.8), 0 0 30px #ffffff;
+    }
+    .voice-white-orb.speaking {
+      animation: speakingOrb 0.9s infinite alternate ease-in-out;
+      box-shadow: 0 0 75px rgba(56, 189, 248, 0.8), 0 0 35px #ffffff;
+    }
+    @keyframes breathingOrb {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 35px rgba(255, 255, 255, 0.5);
+      }
+      50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 60px rgba(255, 255, 255, 0.85);
+      }
+    }
+    @keyframes listeningOrb {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.15);
+      }
+    }
+    @keyframes speakingOrb {
+      0% {
+        transform: scale(0.96);
+      }
+      100% {
+        transform: scale(1.12);
+      }
+    }
+    .voice-modal-status {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .wave-dots-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #FFFFFF;
+    }
+    .wave-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      animation: waveDotBounce 1.2s infinite ease-in-out;
+    }
+    .wave-dot:nth-child(2) { animation-delay: 0.15s; }
+    .wave-dot:nth-child(3) { animation-delay: 0.3s; }
+    .wave-dot:nth-child(4) { animation-delay: 0.45s; }
+    .wave-dot:nth-child(5) { animation-delay: 0.6s; }
+    @keyframes waveDotBounce {
+      0%, 100% {
+        transform: scale(0.7);
+        opacity: 0.3;
+      }
+      50% {
+        transform: scale(1.3);
+        opacity: 1;
+      }
+    }
+    .voice-status-text {
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .voice-transcript-text {
+      color: #A1A1AA;
+      font-size: 12px;
+      font-style: italic;
+      text-align: center;
+      max-width: 320px;
+      min-height: 16px;
+    }
+    .voice-modal-controls {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      margin-top: 6px;
+    }
+    .voice-ctrl-btn {
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .pause-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
+      color: #FFFFFF;
+    }
+    .pause-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .pause-btn.paused {
+      border-color: #6ee7b7;
+      color: #6ee7b7;
+      background: rgba(16, 185, 129, 0.2);
+    }
+    .close-red-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #FF5A5F; /* Coral red matching screenshot */
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(255, 90, 95, 0.45);
+    }
+    .close-red-btn:hover {
+      background: #ff3b41;
+      transform: scale(1.05);
+    }
+    .voice-ctrl-spacer {
+      width: 38px;
+      height: 38px;
+    }
+    .home-indicator-bar {
+      width: 120px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 2px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">S</div>
+      <div>
+        <h1>Sahayak AI — Realtime Voice Agent Demo</h1>
+        <p>Dual-Modal Chat + Voice-to-Voice with Grounded Indian Financial RAG</p>
+      </div>
+    </div>
+    <div class="badges">
+      <button class="btn-voice-launch" onclick="openVoiceModal()">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+        <span>Open Voice Console (SS Design) ↗</span>
+      </button>
+      <span class="badge highlight">Sarvam AI STT & TTS</span>
+      <span class="badge highlight">RBI / IRDAI / NPCI Grounded</span>
+    </div>
+  </header>
+
+  <div class="quick-bar">
+    <span style="font-size: 12px; color: var(--muted); align-self: center;">Try Asking:</span>
+    <button class="quick-chip" onclick="askPreset('What are RBI rules regarding Key Fact Statement and hidden charges?')">RBI KFS & Charges</button>
+    <button class="quick-chip" onclick="askPreset('Can a recovery agent call me at night or harass me?')">Recovery Agent Calling Hours</button>
+    <button class="quick-chip" onclick="askPreset('What is the cooling off period to cancel a digital loan without penalty?')">Cooling-off Period</button>
+    <button class="quick-chip" onclick="askPreset('Are there any foreclosure charges on floating personal loans?')">Foreclosure Norms</button>
+    <button class="quick-chip" onclick="askPreset('My UPI transaction failed and money got debited. What is the auto reversal rule?')">NPCI UPI T+1 Rule</button>
+    <button class="quick-chip" onclick="askPreset('क्या रिकवरी एजेंट रात में फोन कर सकता है?')">Hindi: रिकवरी एजेंट नियम</button>
+    <button class="quick-chip" onclick="askPreset('Will my loan be approved?')">Guardrail: Loan Approval Prediction</button>
+  </div>
+
+  <main id="chatThread">
+    <div class="message assistant">
+      <div class="bubble">
+        Namaste! I am Sahayak, your source-grounded financial readiness copilot. You can speak to me in English, हिन्दी (Hindi), or Hinglish using the microphone button, or type your query in the chat box. Every answer is grounded directly in official RBI, IRDAI, and NPCI regulatory documents.
+      </div>
+      <div class="meta-tag">Grounded in Sahayak Product Policy & RBI Guidelines</div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="controls-row">
+      <div class="control-group">
+        <label for="languageSelect">Spoken Language:</label>
+        <select id="languageSelect">
+          <option value="en">English (simran_en_customer)</option>
+          <option value="hi">हिन्दी Hindi (ishita_hi_customer)</option>
+          <option value="hinglish">Hinglish (shubh_enhi_ads)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label><input type="checkbox" id="autoPlayToggle" checked> Auto-play voice replies</label>
+        <label><input type="checkbox" id="externalConsent" checked> Allow AI Processing</label>
+      </div>
+      <div class="status-text" id="statusIndicator">🎙️ Listening... Speak into your microphone</div>
+    </div>
+
+    <div class="input-bar">
+      <button class="btn btn-record" id="recordBtn" onclick="openVoiceModal()" title="Open Voice Console">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+      </button>
+      <input type="text" id="textInput" placeholder="Type a message or press the mic to speak..." onkeydown="if(event.key==='Enter') sendTextMessage()">
+      <button class="btn btn-primary" id="sendBtn" onclick="sendTextMessage()">
+        <span>Send</span>
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- ANIMATED VOICE-TO-VOICE POPUP MODAL (MATCHES USER SCREENSHOT EXACTLY)    -->
+  <!-- ========================================================================= -->
+  <div id="voiceModalOverlay" class="voice-modal-overlay">
+    <div class="voice-modal-card">
+      <div class="voice-modal-top">
+        <span class="compliance-pill">RBI KFS & CONDUCT VERIFIED</span>
+      </div>
+
+      <div class="voice-orb-wrapper" onclick="toggleVoiceRecording()">
+        <div class="voice-white-orb" id="voiceWhiteOrb"></div>
+      </div>
+
+      <div class="voice-modal-status">
+        <div class="wave-dots-row">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+          <span class="wave-dot"></span>
+          <span class="wave-dot"></span>
+          <span class="wave-dot"></span>
+          <span class="wave-dot"></span>
+        </div>
+        <div class="voice-status-text" id="voiceStatusText">Start speaking</div>
+        <div class="voice-transcript-text" id="voiceTranscriptText"></div>
+      </div>
+
+      <div class="voice-modal-controls">
+        <button class="voice-ctrl-btn pause-btn" id="voicePauseBtn" onclick="toggleVoicePause()" title="Pause">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+          </svg>
+        </button>
+
+        <button class="voice-ctrl-btn close-red-btn" id="voiceCloseBtn" onclick="closeVoiceModal()" title="Close">
+          <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+
+        <button class="voice-ctrl-btn pause-btn" id="voiceMicToggleBtn" onclick="toggleMicMute()" title="Turn Off / On Microphone">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="home-indicator-bar"></div>
+    </div>
+  </div>
+
+  <script>
+    const chatThread = document.getElementById('chatThread');
+    const textInput = document.getElementById('textInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const recordBtn = document.getElementById('recordBtn');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const languageSelect = document.getElementById('languageSelect');
+    const autoPlayToggle = document.getElementById('autoPlayToggle');
+    const externalConsent = document.getElementById('externalConsent');
+
+    // Voice Modal Elements
+    const voiceModalOverlay = document.getElementById('voiceModalOverlay');
+    const voiceWhiteOrb = document.getElementById('voiceWhiteOrb');
+    const voiceStatusText = document.getElementById('voiceStatusText');
+    const voiceTranscriptText = document.getElementById('voiceTranscriptText');
+    const voicePauseBtn = document.getElementById('voicePauseBtn');
+
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let isPaused = false;
+    let isMicMuted = false;
+    let currentStream = null;
+    let silenceTimer = null;
+    let activeAudio = null;
+    let speechRecognizer = null;
+    let currentTranscript = '';
+    let conversationHistory = [];
+
+    // ==========================================
+    // Voice Modal Controls (Screenshot Design)
+    // ==========================================
+    function openVoiceModal() {
+      voiceModalOverlay.classList.add('active');
+      voiceStatusText.innerText = 'Start speaking';
+      voiceTranscriptText.innerText = '';
+      currentTranscript = '';
+      voiceWhiteOrb.className = 'voice-white-orb';
+      isPaused = false;
+      isMicMuted = false;
+      voicePauseBtn.classList.remove('paused');
+      const micBtn = document.getElementById('voiceMicToggleBtn');
+      if (micBtn) micBtn.classList.remove('paused');
+
+      // Auto start listening after smooth entrance
+      setTimeout(() => {
+        startRecording();
+      }, 400);
+    }
+
+    function closeVoiceModal() {
+      if (silenceTimer) {
+        clearTimeout(silenceTimer);
+        silenceTimer = null;
+      }
+      if (speechRecognizer) {
+        try { speechRecognizer.stop(); } catch(e){}
+        speechRecognizer = null;
+      }
+      if (currentStream) {
+        try { currentStream.getTracks().forEach(t => t.stop()); } catch(e){}
+        currentStream = null;
+      }
+      if (isRecording) {
+        stopRecording();
+      }
+      if (activeAudio) {
+        activeAudio.pause();
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      voiceModalOverlay.classList.remove('active');
+    }
+
+    function toggleVoiceRecording() {
+      if (isRecording) {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    }
+
+    function handleMicrophoneOff() {
+      if (silenceTimer) {
+        clearTimeout(silenceTimer);
+        silenceTimer = null;
+      }
+      if (speechRecognizer) {
+        try { speechRecognizer.stop(); } catch(e){}
+        speechRecognizer = null;
+      }
+      if (currentStream) {
+        try { currentStream.getTracks().forEach(t => t.stop()); } catch(e){}
+        currentStream = null;
+      }
+      isMicMuted = true;
+      const micBtn = document.getElementById('voiceMicToggleBtn');
+      if (micBtn) micBtn.classList.add('paused');
+
+      if (currentTranscript && currentTranscript.trim()) {
+        voiceStatusText.innerText = 'Microphone off — Processing...';
+        voiceWhiteOrb.className = 'voice-white-orb';
+        stopRecording();
+      } else {
+        isRecording = false;
+        recordBtn.classList.remove('recording');
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          try { mediaRecorder.stop(); } catch(e){}
+        }
+        voiceStatusText.innerText = 'Microphone off. Tap orb to speak';
+        voiceWhiteOrb.className = 'voice-white-orb';
+      }
+    }
+
+    function toggleMicMute() {
+      if (isRecording) {
+        handleMicrophoneOff();
+      } else {
+        isMicMuted = false;
+        const micBtn = document.getElementById('voiceMicToggleBtn');
+        if (micBtn) micBtn.classList.remove('paused');
+        startRecording();
+      }
+    }
+
+    function toggleVoicePause() {
+      // If currently recording/listening, clicking Pause finishes speaking and sends to AI!
+      if (isRecording || (mediaRecorder && mediaRecorder.state === 'recording')) {
+        stopRecording();
+        return;
+      }
+
+      isPaused = !isPaused;
+      if (isPaused) {
+        voicePauseBtn.classList.add('paused');
+        if (activeAudio && !activeAudio.paused) {
+          activeAudio.pause();
+          voiceStatusText.innerText = 'Paused';
+        } else if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
+          window.speechSynthesis.pause();
+          voiceStatusText.innerText = 'Paused';
+        }
+      } else {
+        voicePauseBtn.classList.remove('paused');
+        if (activeAudio && activeAudio.paused) {
+          activeAudio.play();
+          voiceStatusText.innerText = 'Sahayak is speaking...';
+        } else if ('speechSynthesis' in window && window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+          voiceStatusText.innerText = 'Sahayak is speaking...';
+        }
+      }
+    }
+
+    async function startRecording() {
+      if (isRecording) return;
+      try {
+        currentTranscript = '';
+        voiceTranscriptText.innerText = '';
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        currentStream = stream;
+        stream.getAudioTracks().forEach(track => {
+          track.onended = () => {
+            console.log('Audio track ended / microphone off');
+            handleMicrophoneOff();
+          };
+          track.onmute = () => {
+            console.log('Audio track muted');
+            handleMicrophoneOff();
+          };
+        });
+        audioChunks = [];
+        let options = {};
+        if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported) {
+          const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus', 'audio/wav'];
+          for (const t of types) {
+            if (MediaRecorder.isTypeSupported(t)) {
+              options.mimeType = t;
+              break;
+            }
+          }
+        }
+        mediaRecorder = new MediaRecorder(stream, options);
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+          stream.getTracks().forEach(track => track.stop());
+          const detectedMime = options.mimeType || 'audio/webm';
+          const audioBlob = new Blob(audioChunks, { type: detectedMime });
+          if (audioBlob.size < 400 && !currentTranscript) {
+            voiceStatusText.innerText = 'Start speaking';
+            voiceWhiteOrb.className = 'voice-white-orb';
+            return;
+          }
+          await sendVoiceChat(audioBlob, detectedMime);
+        };
+
+        // Automatic live voice recognition via Web Speech API
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+          const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+          try {
+            if (speechRecognizer) { try { speechRecognizer.abort(); } catch(e){} }
+            speechRecognizer = new SR();
+            speechRecognizer.continuous = true;
+            speechRecognizer.interimResults = true;
+            speechRecognizer.lang = languageSelect.value === 'hi' ? 'hi-IN' : 'en-IN';
+            speechRecognizer.onresult = (ev) => {
+              let text = '';
+              for (let i = 0; i < ev.results.length; ++i) {
+                text += ev.results[i][0].transcript;
+              }
+              const clean = text.trim();
+              if (clean) {
+                currentTranscript = clean;
+                voiceTranscriptText.innerText = `"${clean}"`;
+                voiceStatusText.innerText = `Recognized: "${clean.length > 25 ? clean.slice(-25) + '...' : clean}"`;
+
+                // Auto-send after 2.5s of silence after speaking
+                if (silenceTimer) clearTimeout(silenceTimer);
+                silenceTimer = setTimeout(() => {
+                  if (isRecording && currentTranscript && currentTranscript.length > 2) {
+                    console.log('Silence detected after speech, sending to AI...');
+                    stopRecording();
+                  }
+                }, 2500);
+              }
+            };
+            speechRecognizer.onerror = (ev) => {
+              if (ev.error === 'audio-capture' || ev.error === 'not-allowed') {
+                handleMicrophoneOff();
+              }
+            };
+            speechRecognizer.start();
+          } catch(e) {}
+        }
+
+        mediaRecorder.start();
+        isRecording = true;
+        recordBtn.classList.add('recording');
+        statusIndicator.style.display = 'flex';
+        statusIndicator.innerText = '🎙️ Listening... Speak now';
+
+        voiceStatusText.innerText = 'Listening... Speak now';
+        voiceWhiteOrb.className = 'voice-white-orb listening';
+      } catch (err) {
+        console.error('Microphone error:', err);
+        voiceStatusText.innerText = 'Microphone access denied';
+      }
+    }
+
+    function stopRecording() {
+      if (speechRecognizer) {
+        try { speechRecognizer.stop(); } catch(e){}
+        speechRecognizer = null;
+      }
+      if (!isRecording || !mediaRecorder) return;
+      isRecording = false;
+      recordBtn.classList.remove('recording');
+      statusIndicator.innerText = '⏳ Processing audio with RAG...';
+      voiceStatusText.innerText = 'Processing with RBI RAG...';
+      voiceWhiteOrb.className = 'voice-white-orb';
+      mediaRecorder.stop();
+    }
+
+    async function sendVoiceChat(blob, mimeType) {
+      appendUserMessage(currentTranscript || '[Spoken Audio recording]');
+      const formData = new FormData();
+      let filename = 'query.webm';
+      if (mimeType && mimeType.includes('mp4')) filename = 'query.m4a';
+      else if (mimeType && mimeType.includes('wav')) filename = 'query.wav';
+      else if (mimeType && mimeType.includes('ogg')) filename = 'query.ogg';
+      else if (mimeType && mimeType.includes('aac')) filename = 'query.aac';
+      formData.append('file', blob, filename);
+      formData.append('language', languageSelect.value);
+      formData.append('conversation', JSON.stringify(conversationHistory));
+      formData.append('allow_external_processing', externalConsent.checked);
+      if (currentTranscript) {
+        formData.append('client_transcript', currentTranscript);
+      }
+
+      try {
+        const res = await fetch('/api/chat/voice/e2e', {
+          method: 'POST',
+          body: formData
+        });
+        if (!res.ok) {
+          const err = await res.text();
+          throw new Error(`API error ${res.status}: ${err}`);
+        }
+        const data = await res.json();
+        voiceTranscriptText.innerText = `"${data.transcript || ''}"`;
+        handleAgentResponse(data);
+      } catch (err) {
+        statusIndicator.innerText = '❌ Error: ' + err.message;
+        voiceStatusText.innerText = 'Error occurred';
+        appendAssistantMessage('Error: ' + err.message);
+      } finally {
+        setTimeout(() => {
+          statusIndicator.style.display = 'none';
+        }, 3000);
+      }
+    }
+
+    async function sendTextMessage() {
+      const msg = textInput.value.trim();
+      if (!msg) return;
+      textInput.value = '';
+      appendUserMessage(msg);
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: msg,
+            language: languageSelect.value,
+            conversation: conversationHistory,
+            allow_external_processing: externalConsent.checked,
+            include_audio: true
+          })
+        });
+        const data = await res.json();
+        handleAgentResponse({
+          transcript: msg,
+          reply_text: data.reply,
+          audio_base64: data.audio_base64,
+          rag_info: data.rag_info,
+          timings: { total_ms: 0 }
+        });
+      } catch (err) {
+        appendAssistantMessage('Error: ' + err.message);
+      }
+    }
+
+    function handleAgentResponse(data) {
+      if (data.transcript) {
+        const userBubbles = document.querySelectorAll('.message.user .bubble');
+        if (userBubbles.length > 0) {
+          const lastUser = userBubbles[userBubbles.length - 1];
+          if (lastUser.innerText.includes('[Spoken Audio recording]')) {
+            lastUser.innerText = data.transcript;
+          }
+        }
+        conversationHistory.push({ role: 'user', content: data.transcript });
+      }
+
+      conversationHistory.push({ role: 'assistant', content: data.reply_text });
+      if (conversationHistory.length > 8) conversationHistory = conversationHistory.slice(-8);
+
+      appendAssistantMessage(data.reply_text, data.audio_base64, data.rag_info, data.timings);
+
+      function playSpeechFallback(text) {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const cleanText = text.replace(/\[\^?\d+\]/g, '').replace(/https?:\/\/\S+/g, '').replace(/[*_#`~]/g, '').trim();
+          const utterance = new SpeechSynthesisUtterance(cleanText);
+          const lang = languageSelect.value;
+          utterance.lang = lang === 'hi' ? 'hi-IN' : (lang === 'hinglish' ? 'hi-IN' : 'en-IN');
+          const voices = window.speechSynthesis.getVoices();
+          if (voices && voices.length > 0) {
+            const match = voices.find(v => {
+              const l = (v.lang || '').toLowerCase();
+              return lang === 'hi' || lang === 'hinglish' ? l.startsWith('hi') : (l === 'en-in' || l.startsWith('en'));
+            });
+            if (match) utterance.voice = match;
+          }
+          voiceStatusText.innerText = 'Sahayak is speaking...';
+          voiceWhiteOrb.className = 'voice-white-orb speaking';
+          utterance.onend = () => {
+            voiceStatusText.innerText = 'Start speaking';
+            voiceWhiteOrb.className = 'voice-white-orb';
+          };
+          utterance.onerror = () => {
+            voiceStatusText.innerText = 'Start speaking';
+            voiceWhiteOrb.className = 'voice-white-orb';
+          };
+          window.speechSynthesis.speak(utterance);
+        } else {
+          voiceStatusText.innerText = 'Start speaking';
+          voiceWhiteOrb.className = 'voice-white-orb';
+        }
+      }
+
+      if (data.audio_base64) {
+        voiceStatusText.innerText = 'Sahayak is speaking...';
+        voiceWhiteOrb.className = 'voice-white-orb speaking';
+        if (activeAudio) {
+          activeAudio.pause();
+        }
+        activeAudio = new Audio('data:audio/mpeg;base64,' + data.audio_base64);
+        activeAudio.onended = () => {
+          voiceStatusText.innerText = 'Start speaking';
+          voiceWhiteOrb.className = 'voice-white-orb';
+        };
+        if (autoPlayToggle.checked || voiceModalOverlay.classList.contains('active')) {
+          activeAudio.play().catch(e => {
+            console.log('Audio autoplay prevented, falling back to Web Speech API:', e);
+            playSpeechFallback(data.reply_text);
+          });
+        }
+      } else {
+        if (autoPlayToggle.checked || voiceModalOverlay.classList.contains('active')) {
+          playSpeechFallback(data.reply_text);
+        } else {
+          voiceStatusText.innerText = 'Start speaking';
+          voiceWhiteOrb.className = 'voice-white-orb';
+        }
+      }
+    }
+
+    function appendUserMessage(text) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'message user';
+      msgDiv.innerHTML = `<div class="bubble">${escapeHtml(text)}</div>`;
+      chatThread.appendChild(msgDiv);
+      chatThread.scrollTop = chatThread.scrollHeight;
+    }
+
+    function appendAssistantMessage(text, audioB64, ragInfo, timings) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'message assistant';
+
+      let audioHtml = '';
+      if (audioB64) {
+        audioHtml = `<audio controls src="data:audio/mpeg;base64,${audioB64}"></audio>`;
+      }
+
+      let citationsHtml = '';
+      if (ragInfo && ragInfo.citations && ragInfo.citations.length > 0) {
+        citationsHtml = `
+          <div class="citations-card">
+            <div class="citations-header">
+              <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2zm0-10h2v8h-2z"/></svg>
+              <span>Verified Regulatory Citations:</span>
+            </div>
+            ${ragInfo.citations.map(c => `
+              <div class="citation-item">
+                <strong>${escapeHtml(c.source_name || c.document_name)}</strong> — <em>${escapeHtml(c.clause)}</em>
+                ${c.source_url ? `<br><a class="citation-link" href="${c.source_url}" target="_blank">🔗 Official Link</a>` : ''}
+                ${c.effective_from ? ` <span style="color:#94a3b8;">(Effective: ${c.effective_from})</span>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      let timingsHtml = '';
+      if (timings && timings.total_ms > 0) {
+        timingsHtml = `
+          <div class="timings-hud">
+            ${timings.stt_ms ? `<span class="timing-pill">STT: <strong>${timings.stt_ms}ms</strong></span>` : ''}
+            ${timings.rag_ms ? `<span class="timing-pill">RAG: <strong>${timings.rag_ms}ms</strong></span>` : ''}
+            ${timings.llm_ms ? `<span class="timing-pill">LLM: <strong>${timings.llm_ms}ms</strong></span>` : ''}
+            ${timings.tts_ms ? `<span class="timing-pill">TTS: <strong>${timings.tts_ms}ms</strong></span>` : ''}
+            <span class="timing-pill">Total: <strong>${timings.total_ms}ms</strong></span>
+          </div>
+        `;
+      }
+
+      msgDiv.innerHTML = `
+        <div class="bubble">${escapeHtml(text)}</div>
+        ${audioHtml}
+        ${citationsHtml}
+        ${timingsHtml}
+      `;
+      chatThread.appendChild(msgDiv);
+      chatThread.scrollTop = chatThread.scrollHeight;
+    }
+
+    function askPreset(text) {
+      textInput.value = text;
+      sendTextMessage();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "UbankuApp",
+    "slug": "ubankuapp",
+    "version": "1.0.0",
+    "scheme": "ubankuapp",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "org.reactjs.native.example.UbankuApp",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.ubankuapp"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow UbankuApp to scan demo wallet QR codes.",
+          "barcodeScannerEnabled": true,
+          "recordAudioAndroid": false
+        }
+      ]
+    ]
+  }
+}

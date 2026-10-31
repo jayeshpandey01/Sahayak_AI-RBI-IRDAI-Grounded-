@@ -1,0 +1,33 @@
+appId: ${APP_ID}
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Welcome back"
+- tapOn:
+    id: "auth-email"
+- inputText: ${TEST_EMAIL}
+- tapOn:
+    id: "auth-password"
+- inputText: ${TEST_PASSWORD}
+- tapOn:
+    id: "auth-submit"
+- assertVisible: "Your financial journey"
+- tapOn: "Continue journey"
+- tapOn:
+    id: "journey-amount"
+- inputText: "100000"
+- tapOn:
+    id: "journey-monthlyIncome"
+- inputText: "45000"
+- tapOn: "Salaried"
+- tapOn: "Save and continue"
+- assertVisible: "Synthetic document preflight"
+- tapOn: "Synthetic identity record (PAN)"
+- tapOn: "Synthetic income record (salary slip)"
+- tapOn: "Synthetic bank statement record"
+- tapOn: "Consent and run synthetic preflight"
+- assertVisible: "Review your readiness"
+- tapOn:
+    id: "handoff-consent"
+- tapOn: "Prepare demo handoff"
+- assertVisible: "Backend readiness handoff is prepared"

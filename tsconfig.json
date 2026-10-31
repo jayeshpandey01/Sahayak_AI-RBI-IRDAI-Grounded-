@@ -1,0 +1,4 @@
+{
+  "extends": "@react-native/typescript-config",
+  "exclude": ["node_modules", "dist", "web-build"]
+}

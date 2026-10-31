@@ -1,0 +1,86 @@
+{
+  "name": "UbankuApp",
+  "version": "0.0.1",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "lint": "eslint .",
+    "start": "expo start",
+    "start:8090": "expo start --port 8090",
+    "android:expo": "expo start --go",
+    "test": "jest",
+    "expo": "expo start",
+    "web": "expo start --web",
+    "web:8090": "expo start --web --port 8090",
+    "backend:setup": "python3 -m venv backend/.venv && backend/.venv/bin/pip install -r backend/requirements.txt",
+    "backend:start": "cd backend && .venv/bin/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "e2e:android": "maestro test -e APP_ID=com.ubankuapp .maestro/flows/smoke.yaml",
+    "e2e:ios": "maestro test -e APP_ID=org.reactjs.native.example.UbankuApp .maestro/flows/smoke.yaml",
+    "e2e:journey:android": "maestro test -e APP_ID=com.ubankuapp -e TEST_EMAIL=$TEST_EMAIL -e TEST_PASSWORD=$TEST_PASSWORD .maestro/flows/backend_loan_journey.yaml",
+    "e2e:journey:ios": "maestro test -e APP_ID=org.reactjs.native.example.UbankuApp -e TEST_EMAIL=$TEST_EMAIL -e TEST_PASSWORD=$TEST_PASSWORD .maestro/flows/backend_loan_journey.yaml"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~58.0.15",
+    "@expo/vector-icons": "^15.1.1",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-navigation/bottom-tabs": "^7.21.0",
+    "@react-navigation/native": "^7.5.1",
+    "@react-navigation/native-stack": "^7.21.0",
+    "@react-navigation/stack": "^7.12.1",
+    "axios": "^1.21.0",
+    "expo": "~58.0.21",
+    "expo-camera": "~58.0.14",
+    "expo-crypto": "~58.0.7",
+    "expo-secure-store": "~58.0.2",
+    "native-base": "^3.4.28",
+    "normalize-css-color": "^1.0.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-native": "0.88.1",
+    "react-native-gesture-handler": "~3.3.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-qrcode-svg": "^6.3.49",
+    "react-native-safe-area-context": "~5.10.1",
+    "react-native-screens": "^4.30.1",
+    "react-native-svg": "^15.16.0",
+    "react-native-web": "^0.21.4",
+    "styled-components": "^5.3.11",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/runtime": "^7.29.10",
+    "@react-native-community/cli": "^20.2.0",
+    "@react-native-community/eslint-config": "^3.2.0",
+    "@react-native/jest-preset": "^0.88.1",
+    "@react-native/typescript-config": "^0.88.1",
+    "@types/jest": "30.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-test-renderer": "^19.1.0",
+    "babel-jest": "~30.5.2",
+    "eslint": "^8.57.1",
+    "jest": "~30.5.2",
+    "jest-expo": "~58.0.13",
+    "prettier": "^2.8.8",
+    "react-refresh": "^0.14.2",
+    "react-test-renderer": "19.3.1",
+    "typescript": "~6.0.3"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "setupFiles": [
+      "react-native-gesture-handler/jestSetup.js"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/.agents/",
+      "/backend/"
+    ]
+  }
+}
