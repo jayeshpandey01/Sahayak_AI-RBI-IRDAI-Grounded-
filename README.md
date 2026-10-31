@@ -230,6 +230,11 @@ python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 The interactive OpenAPI documentation is available at:
 `http://localhost:8000/docs`
 
+For separate Vercel deployments of the FastAPI API and Expo web client, follow
+the [Vercel deployment guide](VERCEL_DEPLOYMENT.md). The deployed API keeps
+Swagger UI at `/docs`, ReDoc at `/redoc`, and its OpenAPI schema at
+`/openapi.json`.
+
 ### 2. Frontend Application Setup
 
 In the root repository directory, install the Node.js dependencies:

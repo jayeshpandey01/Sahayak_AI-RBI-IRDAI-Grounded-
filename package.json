@@ -14,6 +14,7 @@
     "expo": "expo start",
     "web": "expo start --web",
     "web:8090": "expo start --web --port 8090",
+    "vercel:build": "node scripts/validate-vercel-env.cjs && expo export --platform web",
     "backend:setup": "python3 -m venv backend/.venv && backend/.venv/bin/pip install -r backend/requirements.txt",
     "backend:start": "cd backend && .venv/bin/python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
     "e2e:android": "maestro test -e APP_ID=com.ubankuapp .maestro/flows/smoke.yaml",

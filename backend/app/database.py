@@ -7,10 +7,13 @@ from app.config import settings
 
 logger = logging.getLogger("sahayak.database")
 
-engine = create_engine(
-    settings.SYNC_DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in settings.SYNC_DATABASE_URL else {}
-)
+engine_options = {"pool_pre_ping": True}
+if "sqlite" in settings.SYNC_DATABASE_URL.lower():
+    engine_options["connect_args"] = {"check_same_thread": False}
+elif settings.ENVIRONMENT.lower() == "production":
+    # Keep serverless connection usage low; use a provider's pooled DB URL.
+    engine_options.update({"pool_size": 1, "max_overflow": 0, "pool_recycle": 300})
+engine = create_engine(settings.SYNC_DATABASE_URL, **engine_options)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -79,10 +82,17 @@ def init_db():
 
     if settings.ENVIRONMENT == "production":
         # In production, DO NOT execute DDL create_all() on startup.
-        # Verify connectivity only. Schema mutations must be applied via migrate.py.
+        # Verify connectivity and schema only. Schema changes are managed offline.
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
-        logger.info("Production database connectivity verified. Schema mutations must be applied via migrate.py.")
+        missing_tables = set(Base.metadata.tables) - set(inspect(engine).get_table_names())
+        if missing_tables:
+            missing = ", ".join(sorted(missing_tables))
+            raise RuntimeError(
+                f"Production database schema is incomplete (missing: {missing}). "
+                "Run the database bootstrap or migrations before deploying the API."
+            )
+        logger.info("Production database connectivity and schema verified.")
     else:
         # In development / testing, auto-scaffold missing tables for local developer ergonomics
         Base.metadata.create_all(bind=engine)

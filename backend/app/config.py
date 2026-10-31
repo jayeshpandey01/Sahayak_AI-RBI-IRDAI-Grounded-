@@ -37,10 +37,15 @@ if root_env_path.exists():
         if value is not None and not os.getenv(key):
             os.environ[key] = value
 
+DEFAULT_ENVIRONMENT = os.getenv(
+    "ENVIRONMENT",
+    "production" if os.getenv("VERCEL_ENV", "").lower() == "production" else "development",
+).lower()
+
 class Settings(BaseModel):
     APP_NAME: str = "Sahayak AI"
     APP_VERSION: str = "1.0.0"
-    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    ENVIRONMENT: str = DEFAULT_ENVIRONMENT
     # Current SQLAlchemy data access uses a synchronous engine. Honor the
     # common DATABASE_URL setting when SYNC_DATABASE_URL is not supplied.
     DATABASE_URL: str = os.getenv("DATABASE_URL", DEFAULT_SYNC_DB_URL)
@@ -52,7 +57,7 @@ class Settings(BaseModel):
 
     # JWT Authentication
     JWT_SECRET: str = os.getenv("JWT_SECRET") or (
-        secrets.token_urlsafe(48) if os.getenv("ENVIRONMENT", "development") != "production" else ""
+        secrets.token_urlsafe(48) if DEFAULT_ENVIRONMENT != "production" else ""
     )
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
@@ -96,11 +101,11 @@ class Settings(BaseModel):
     # AI provider configuration. External processing is enabled by default in development when keys exist.
     AI_EXTERNAL_PROCESSING_ENABLED: bool = os.getenv(
         "AI_EXTERNAL_PROCESSING_ENABLED",
-        "true" if os.getenv("ENVIRONMENT", "development").lower() != "production" else "false",
+        "true" if DEFAULT_ENVIRONMENT != "production" else "false",
     ).lower() in ("true", "1", "yes")
     AI_REAL_USER_ROLLOUT_APPROVED: bool = os.getenv(
         "AI_REAL_USER_ROLLOUT_APPROVED",
-        "true" if os.getenv("ENVIRONMENT", "development").lower() != "production" else "false",
+        "true" if DEFAULT_ENVIRONMENT != "production" else "false",
     ).lower() in ("true", "1", "yes")
     AI_PAYMENT_CONTEXT_ENABLED: bool = os.getenv("AI_PAYMENT_CONTEXT_ENABLED", "false").lower() in ("true", "1", "yes")
     OPENROUTER_API_KEY: str = (os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENROUTER_API") or "").strip()
@@ -146,8 +151,15 @@ class Settings(BaseModel):
 
     @model_validator(mode="after")
     def validate_ai_free_tier_limits(self) -> "Settings":
-        if self.ENVIRONMENT.lower() == "production" and not self.JWT_SECRET:
-            raise ValueError("JWT_SECRET must be explicitly configured in production.")
+        if self.ENVIRONMENT.lower() == "production":
+            if not self.JWT_SECRET:
+                raise ValueError("JWT_SECRET must be explicitly configured in production.")
+            if "sqlite" in self.SYNC_DATABASE_URL.lower():
+                raise ValueError("Production requires a persistent PostgreSQL DATABASE_URL; SQLite is not supported.")
+            if not self.ALLOWED_ORIGINS or any(
+                not origin.startswith("https://") for origin in self.ALLOWED_ORIGINS
+            ):
+                raise ValueError("Production ALLOWED_ORIGINS must list the HTTPS origins of deployed web clients.")
         if not 1 <= self.OPENROUTER_DAILY_LIMIT <= 40:
             raise ValueError("OPENROUTER_DAILY_LIMIT must be between 1 and the 40-request free-tier cap.")
         if not 1 <= self.OPENROUTER_MINUTE_LIMIT <= 15:

@@ -33,6 +33,9 @@ app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     description="Sahayak AI — High-Reliability Financial Journey Copilot",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
     lifespan=lifespan,
 )
 
@@ -131,15 +134,15 @@ def direct_emi(payload: dict, db: Session = Depends(get_db)):
 
 @app.get("/health", tags=["System"])
 def health_check():
-    from app.database import check_all_dbs
-    db_status = check_all_dbs()
-    is_healthy = db_status.get("primary_db", {}).get("status") == "connected"
-    return {
-        "status": "healthy" if is_healthy else "degraded",
-        "service": "sahayak-ai-api",
-        "version": settings.APP_VERSION,
-        "environment": settings.ENVIRONMENT,
-        "database": db_status.get("primary_db", {}).get("status"),
-        "datastores": db_status,
-        "rbi_kfs_compliance": "ACTIVE",
-    }
+    from sqlalchemy import text
+    from app.database import engine
+
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except Exception:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "degraded", "service": "sahayak-ai-api", "database": "unavailable"},
+        )
+    return {"status": "healthy", "service": "sahayak-ai-api", "version": settings.APP_VERSION}
